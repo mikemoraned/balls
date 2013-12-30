@@ -2,16 +2,17 @@
 
   class Ball
     constructor: (@x, @y) ->
+      @radius = 50
 
     draw: (context) =>
       context.beginPath();
-      context.arc(@x, @y, 50, 0, 2 * Math.PI, false);
+      context.arc(@x, @y, @radius, 0, 2 * Math.PI, false);
       context.fillStyle = @gradient(context)
       context.fill()
 
     gradient: (context) =>
 #      console.dir(this)
-      gradient = context.createRadialGradient(@x,@y,10,@x,@y,50)
+      gradient = context.createLinearGradient(@x - @radius, @y - @radius,@radius * 2,@radius * 2)
 #      gradient.addColorStop(0, '#00C9FF')
 #      gradient.addColorStop(0.8, '#00B5E2')
 #      gradient.addColorStop(1, 'rgba(0,201,255,0)')
@@ -67,20 +68,31 @@
 
     if @dirty
       saved = _saveContextProperties(@context)
+#
+#      @context.fillStyle = "white"
+#      @context.fillRect(0, 0, @width, @height)
 
-      @context.fillStyle = "white"
-      @context.fillRect(0, 0, @width, @height)
+      @p = 100
+      @size = 100
+      @context.fillStyle = @context.createLinearGradient(@p, @p, @p + @size, @p + @size)
+      @context.fillStyle.addColorStop(0, "black")
+      @context.fillStyle.addColorStop(1, "white")
+      @context.fillRect(@p, @p, @size, @size)
 
-      for ball in @balls
-        @context.globalCompositeOperation = "multiply"
-        ball.draw(@context)
+      @context.fillStyle = "red"
+      @context.fillRect(@p, @p, 5, 5)
+      @context.fillRect(@p + @size, @p + @size, 5, 5)
+
+#      for ball in @balls
+#        @context.globalCompositeOperation = "multiply"
+#        ball.draw(@context)
 
       imageData = @context.getImageData(0, 0, @width, @height)
 
-      @dirty = false
-      for ball in @balls
-        dirty = ball.readOffset(imageData)
-        @dirty = @dirty || dirty
+#      @dirty = false
+#      for ball in @balls
+#        dirty = ball.readOffset(imageData)
+#        @dirty = @dirty || dirty
 
       saved.restore()
 

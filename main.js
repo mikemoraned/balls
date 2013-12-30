@@ -13,18 +13,19 @@
         this.readOffset = __bind(this.readOffset, this);
         this.gradient = __bind(this.gradient, this);
         this.draw = __bind(this.draw, this);
+        this.radius = 50;
       }
 
       Ball.prototype.draw = function(context) {
         context.beginPath();
-        context.arc(this.x, this.y, 50, 0, 2 * Math.PI, false);
+        context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
         context.fillStyle = this.gradient(context);
         return context.fill();
       };
 
       Ball.prototype.gradient = function(context) {
         var gradient;
-        gradient = context.createRadialGradient(this.x, this.y, 10, this.x, this.y, 50);
+        gradient = context.createLinearGradient(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
         gradient.addColorStop(0, "black");
         gradient.addColorStop(1, "white");
         return gradient;
@@ -76,25 +77,19 @@
       return console.log("Started");
     };
     draw = function() {
-      var ball, dirty, imageData, saved, _i, _j, _len, _len1, _ref, _ref1;
+      var imageData, saved;
       if (_this.dirty) {
         saved = _saveContextProperties(_this.context);
-        _this.context.fillStyle = "white";
-        _this.context.fillRect(0, 0, _this.width, _this.height);
-        _ref = _this.balls;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          ball = _ref[_i];
-          _this.context.globalCompositeOperation = "multiply";
-          ball.draw(_this.context);
-        }
+        _this.p = 100;
+        _this.size = 100;
+        _this.context.fillStyle = _this.context.createLinearGradient(_this.p, _this.p, _this.p + _this.size, _this.p + _this.size);
+        _this.context.fillStyle.addColorStop(0, "black");
+        _this.context.fillStyle.addColorStop(1, "white");
+        _this.context.fillRect(_this.p, _this.p, _this.size, _this.size);
+        _this.context.fillStyle = "red";
+        _this.context.fillRect(_this.p, _this.p, 5, 5);
+        _this.context.fillRect(_this.p + _this.size, _this.p + _this.size, 5, 5);
         imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
-        _this.dirty = false;
-        _ref1 = _this.balls;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          ball = _ref1[_j];
-          dirty = ball.readOffset(imageData);
-          _this.dirty = _this.dirty || dirty;
-        }
         saved.restore();
       }
       return requestAnimationFrame(draw);
