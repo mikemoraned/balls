@@ -9,16 +9,38 @@
       function Ball(x, y) {
         this.x = x;
         this.y = y;
+        this._clamp = __bind(this._clamp, this);
+        this.readOffset = __bind(this.readOffset, this);
         this.gradient = __bind(this.gradient, this);
       }
 
       Ball.prototype.gradient = function(context) {
         var gradient;
-        gradient = context.createRadialGradient(this.x, this.y, 15, this.x, this.y, 100);
+        gradient = context.createRadialGradient(this.x, this.y, 5, this.x, this.y, 10);
         gradient.addColorStop(0, '#00C9FF');
         gradient.addColorStop(0.8, '#00B5E2');
         gradient.addColorStop(1, 'rgba(0,201,255,0)');
         return gradient;
+      };
+
+      Ball.prototype.readOffset = function(imageData) {
+        var changed, g, nextX, nextY, pos, r, scale, velocityX, velocityY;
+        pos = ((this.y * imageData.width) + this.x) * 4;
+        r = imageData.data[pos];
+        g = imageData.data[pos + 1];
+        scale = 16;
+        velocityX = (r - 128) / scale;
+        velocityY = (g - 128) / scale;
+        nextX = this._clamp(this.x + velocityX, 0, imageData.width - 1);
+        nextY = this._clamp(this.y + velocityY, 0, imageData.height - 1);
+        changed = !(nextX === this.x && nextY === this.y);
+        this.x = nextX;
+        this.y = nextY;
+        return changed;
+      };
+
+      Ball.prototype._clamp = function(value, min, max) {
+        return Math.min(max, Math.max(min, value));
       };
 
       return Ball;
@@ -38,7 +60,7 @@
         var _i, _results;
         _results = [];
         for (i = _i = 0; _i <= 5; i = ++_i) {
-          _results.push(new Ball(Math.random() * width, Math.random() * height));
+          _results.push(new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height)));
         }
         return _results;
       })();
@@ -47,8 +69,9 @@
       return console.log("Started");
     };
     draw = function() {
-      var ball, _i, _len, _ref;
+      var ball, imageData, savedFillStyle, _i, _j, _len, _len1, _ref, _ref1;
       if (_this.dirty) {
+        savedFillStyle = _this.context.fillStyle;
         _ref = _this.balls;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ball = _ref[_i];
@@ -56,7 +79,14 @@
           _this.context.fillStyle = ball.gradient(_this.context);
           _this.context.fillRect(0, 0, _this.width, _this.height);
         }
+        imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
         _this.dirty = false;
+        _ref1 = _this.balls;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          ball = _ref1[_j];
+          _this.dirty = _this.dirty || ball.readOffset(imageData);
+        }
+        _this.context.fillStyle = savedFillStyle;
       }
       return requestAnimationFrame(draw);
     };
