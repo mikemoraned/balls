@@ -22,7 +22,7 @@
 
     @context = canvas.getContext("2d");
 
-    @balls = for i in [0..10]
+    @balls = for i in [0..5]
       new Ball(Math.random() * width, Math.random() * height)
     @dirty = true
 
@@ -34,6 +34,7 @@
 
     if @dirty
       for ball in @balls
+        @context.globalCompositeOperation = "multiply"
         @context.fillStyle = ball.gradient(@context)
         @context.fillRect(0, 0, @width, @height)
       @dirty = false

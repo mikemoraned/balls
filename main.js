@@ -37,7 +37,7 @@
       _this.balls = (function() {
         var _i, _results;
         _results = [];
-        for (i = _i = 0; _i <= 10; i = ++_i) {
+        for (i = _i = 0; _i <= 5; i = ++_i) {
           _results.push(new Ball(Math.random() * width, Math.random() * height));
         }
         return _results;
@@ -52,6 +52,7 @@
         _ref = _this.balls;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ball = _ref[_i];
+          _this.context.globalCompositeOperation = "multiply";
           _this.context.fillStyle = ball.gradient(_this.context);
           _this.context.fillRect(0, 0, _this.width, _this.height);
         }
