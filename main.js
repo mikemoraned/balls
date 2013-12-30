@@ -12,25 +12,15 @@
         this._clamp = __bind(this._clamp, this);
         this._threshold = __bind(this._threshold, this);
         this.readOffset = __bind(this.readOffset, this);
-        this.gradient = __bind(this.gradient, this);
         this.draw = __bind(this.draw, this);
-        this.radius = 100;
+        this.radius = 10;
       }
 
       Ball.prototype.draw = function(context) {
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-        context.fillStyle = this.gradient(context);
-        return context.fill();
-      };
-
-      Ball.prototype.gradient = function(context) {
-        var gradient;
-        gradient = context.createLinearGradient(this.x - this.radius, this.y - this.radius, this.x + this.radius, this.y + this.radius);
-        gradient.addColorStop(0, "white");
-        gradient.addColorStop(0.5, "rgb(128,128,0)");
-        gradient.addColorStop(1, "black");
-        return gradient;
+        context.strokeStyle = "red";
+        return context.stroke();
       };
 
       Ball.prototype.readOffset = function(imageData) {
@@ -38,16 +28,12 @@
         pos = ((this.y * imageData.width) + this.x) * 4;
         r = imageData.data[pos];
         g = imageData.data[pos + 1];
-        console.log("" + r + "," + g);
         scale = 16;
         velocityX = this._threshold(Math.floor((r - 128) / scale), 5);
         velocityY = this._threshold(Math.floor((g - 128) / scale), 5);
         nextX = this._clamp(this.x + velocityX, 0, imageData.width - 1);
         nextY = this._clamp(this.y + velocityY, 0, imageData.height - 1);
         changed = !(nextX === this.x && nextY === this.y);
-        if (changed) {
-          console.dir("(" + this.x + "," + this.y + ") => (" + nextX + "," + nextY + ")");
-        }
         this.x = nextX;
         this.y = nextY;
         return changed;
@@ -72,26 +58,63 @@
       return initialize();
     };
     initialize = function() {
+      var i, numBalls;
       console.log("Starting");
       _this.canvas = doc.getElementById("balls");
       _this.width = canvas.width;
       _this.height = canvas.height;
       _this.context = canvas.getContext("2d");
-      _this.balls = [];
-      _this.balls.push(new Ball(0.40 * _this.width, 0.40 * _this.height));
-      _this.balls.push(new Ball(0.40 * _this.width, 0.60 * _this.height));
+      numBalls = 5000;
+      _this.balls = (function() {
+        var _i, _results;
+        _results = [];
+        for (i = _i = 0; 0 <= numBalls ? _i < numBalls : _i > numBalls; i = 0 <= numBalls ? ++_i : --_i) {
+          _results.push(new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height)));
+        }
+        return _results;
+      })();
       _this.dirty = true;
-      _this.canvas.onclick = function() {
-        return _this.dirty = true;
-      };
+      _this.canvas.addEventListener('click', function(e) {
+        if (e.shiftKey) {
+          console.log("Adding");
+          _this.balls.push(new Ball(e.offsetX, e.offsetY));
+          return _this.dirty = true;
+        } else {
+          console.log("Marking as dirty");
+          return _this.dirty = true;
+        }
+      });
+      _this.canvas.addEventListener('mousemove', function(e) {
+        var g, imageData, pos, r, x, y;
+        if (e.altKey) {
+          imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
+          x = e.offsetX;
+          y = e.offsetY;
+          pos = ((y * imageData.width) + x) * 4;
+          r = imageData.data[pos];
+          g = imageData.data[pos + 1];
+          return console.log("" + x + "," + y + ": r: " + r + ", g: " + g);
+        }
+      });
       draw();
       return console.log("Started");
     };
     draw = function() {
-      var ball, dirty, imageData, saved, _i, _j, _len, _len1, _ref, _ref1;
+      var ball, dirty, gradientA, gradientB, imageData, saved, _i, _j, _len, _len1, _ref, _ref1;
       if (_this.dirty) {
         saved = _saveContextProperties(_this.context);
         _this.context.fillStyle = "black";
+        _this.context.fillRect(0, 0, _this.width, _this.height);
+        _this.context.globalCompositeOperation = "lighter";
+        gradientA = _this.context.createLinearGradient(0, 0, 0, _this.height);
+        gradientA.addColorStop(0, "rgb(0,0,0)");
+        gradientA.addColorStop(1, "rgb(255,0,0)");
+        _this.context.fillStyle = gradientA;
+        _this.context.fillRect(0, 0, _this.width, _this.height);
+        gradientB = _this.context.createLinearGradient(0, 0, _this.width, 0);
+        gradientB.addColorStop(0, "rgb(0,0,0)");
+        gradientB.addColorStop(1, "rgb(0,255,0)");
+        _this.context.fillStyle = gradientB;
         _this.context.fillRect(0, 0, _this.width, _this.height);
         _ref = _this.balls;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -105,6 +128,7 @@
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           ball = _ref1[_j];
           dirty = ball.readOffset(imageData);
+          _this.dirty = _this.dirty || dirty;
         }
         saved.restore();
       }
