@@ -12,14 +12,21 @@
         this._clamp = __bind(this._clamp, this);
         this.readOffset = __bind(this.readOffset, this);
         this.gradient = __bind(this.gradient, this);
+        this.draw = __bind(this.draw, this);
       }
+
+      Ball.prototype.draw = function(context) {
+        context.beginPath();
+        context.arc(this.x, this.y, 50, 0, 2 * Math.PI, false);
+        context.fillStyle = this.gradient(context);
+        return context.fill();
+      };
 
       Ball.prototype.gradient = function(context) {
         var gradient;
         gradient = context.createRadialGradient(this.x, this.y, 10, this.x, this.y, 50);
-        gradient.addColorStop(0, '#00C9FF');
-        gradient.addColorStop(0.8, '#00B5E2');
-        gradient.addColorStop(1, 'rgba(0,201,255,0)');
+        gradient.addColorStop(0, "black");
+        gradient.addColorStop(1, "white");
         return gradient;
       };
 
@@ -69,7 +76,7 @@
       return console.log("Started");
     };
     draw = function() {
-      var ball, imageData, saved, _i, _j, _len, _len1, _ref, _ref1;
+      var ball, dirty, imageData, saved, _i, _j, _len, _len1, _ref, _ref1;
       if (_this.dirty) {
         saved = _saveContextProperties(_this.context);
         _this.context.fillStyle = "white";
@@ -78,15 +85,15 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ball = _ref[_i];
           _this.context.globalCompositeOperation = "multiply";
-          _this.context.fillStyle = ball.gradient(_this.context);
-          _this.context.fillRect(0, 0, _this.width, _this.height);
+          ball.draw(_this.context);
         }
         imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
         _this.dirty = false;
         _ref1 = _this.balls;
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           ball = _ref1[_j];
-          _this.dirty = _this.dirty || ball.readOffset(imageData);
+          dirty = ball.readOffset(imageData);
+          _this.dirty = _this.dirty || dirty;
         }
         saved.restore();
       }

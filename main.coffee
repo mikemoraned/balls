@@ -3,12 +3,23 @@
   class Ball
     constructor: (@x, @y) ->
 
+    draw: (context) =>
+      context.beginPath();
+      context.arc(@x, @y, 50, 0, 2 * Math.PI, false);
+      context.fillStyle = @gradient(context)
+      context.fill()
+
     gradient: (context) =>
 #      console.dir(this)
       gradient = context.createRadialGradient(@x,@y,10,@x,@y,50)
-      gradient.addColorStop(0, '#00C9FF')
-      gradient.addColorStop(0.8, '#00B5E2')
-      gradient.addColorStop(1, 'rgba(0,201,255,0)')
+#      gradient.addColorStop(0, '#00C9FF')
+#      gradient.addColorStop(0.8, '#00B5E2')
+#      gradient.addColorStop(1, 'rgba(0,201,255,0)')
+#      gradient.addColorStop(0, '#000000')
+#      gradient.addColorStop(0.99, '#FFFF00')
+#      gradient.addColorStop(1, '#000000')
+      gradient.addColorStop(0, "black")
+      gradient.addColorStop(1, "white")
       gradient
 
     readOffset: (imageData) =>
@@ -62,14 +73,14 @@
 
       for ball in @balls
         @context.globalCompositeOperation = "multiply"
-        @context.fillStyle = ball.gradient(@context)
-        @context.fillRect(0, 0, @width, @height)
+        ball.draw(@context)
 
       imageData = @context.getImageData(0, 0, @width, @height)
 
       @dirty = false
       for ball in @balls
-        @dirty = @dirty || ball.readOffset(imageData)
+        dirty = ball.readOffset(imageData)
+        @dirty = @dirty || dirty
 
       saved.restore()
 
