@@ -3,7 +3,7 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   (function(doc, nav) {
-    var Ball, detect, draw, initialize,
+    var Ball, detect, draw, initialize, _saveContextProperties,
       _this = this;
     Ball = (function() {
       function Ball(x, y) {
@@ -16,7 +16,7 @@
 
       Ball.prototype.gradient = function(context) {
         var gradient;
-        gradient = context.createRadialGradient(this.x, this.y, 5, this.x, this.y, 10);
+        gradient = context.createRadialGradient(this.x, this.y, 10, this.x, this.y, 50);
         gradient.addColorStop(0, '#00C9FF');
         gradient.addColorStop(0.8, '#00B5E2');
         gradient.addColorStop(1, 'rgba(0,201,255,0)');
@@ -29,8 +29,8 @@
         r = imageData.data[pos];
         g = imageData.data[pos + 1];
         scale = 16;
-        velocityX = (r - 128) / scale;
-        velocityY = (g - 128) / scale;
+        velocityX = Math.floor((r - 128) / scale);
+        velocityY = Math.floor((g - 128) / scale);
         nextX = this._clamp(this.x + velocityX, 0, imageData.width - 1);
         nextY = this._clamp(this.y + velocityY, 0, imageData.height - 1);
         changed = !(nextX === this.x && nextY === this.y);
@@ -69,9 +69,11 @@
       return console.log("Started");
     };
     draw = function() {
-      var ball, imageData, savedFillStyle, _i, _j, _len, _len1, _ref, _ref1;
+      var ball, imageData, saved, _i, _j, _len, _len1, _ref, _ref1;
       if (_this.dirty) {
-        savedFillStyle = _this.context.fillStyle;
+        saved = _saveContextProperties(_this.context);
+        _this.context.fillStyle = "white";
+        _this.context.fillRect(0, 0, _this.width, _this.height);
         _ref = _this.balls;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ball = _ref[_i];
@@ -86,9 +88,20 @@
           ball = _ref1[_j];
           _this.dirty = _this.dirty || ball.readOffset(imageData);
         }
-        _this.context.fillStyle = savedFillStyle;
+        saved.restore();
       }
       return requestAnimationFrame(draw);
+    };
+    _saveContextProperties = function(context) {
+      var fillStyle, globalCompositeOperation;
+      globalCompositeOperation = context.globalCompositeOperation;
+      fillStyle = context.fillStyle;
+      return {
+        restore: function() {
+          _this.context.globalCompositeOperation = globalCompositeOperation;
+          return _this.context.fillStyle = fillStyle;
+        }
+      };
     };
     return addEventListener("DOMContentLoaded", detect);
   })(document, navigator);

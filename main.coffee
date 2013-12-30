@@ -4,7 +4,8 @@
     constructor: (@x, @y) ->
 
     gradient: (context) =>
-      gradient = context.createRadialGradient(@x,@y,5,@x,@y,10)
+#      console.dir(this)
+      gradient = context.createRadialGradient(@x,@y,10,@x,@y,50)
       gradient.addColorStop(0, '#00C9FF')
       gradient.addColorStop(0.8, '#00B5E2')
       gradient.addColorStop(1, 'rgba(0,201,255,0)')
@@ -16,12 +17,14 @@
       g = imageData.data[pos + 1]
 
       scale = 16
-      velocityX = (r - 128) / scale
-      velocityY = (g - 128) / scale
+      velocityX = Math.floor((r - 128) / scale)
+      velocityY = Math.floor((g - 128) / scale)
 
       nextX = @_clamp(@x + velocityX, 0, imageData.width - 1)
       nextY = @_clamp(@y + velocityY, 0, imageData.height - 1)
       changed = !(nextX == @x && nextY == @y)
+#      if (changed)
+#        console.dir("(#{@x},#{@y}) => (#{nextX},#{nextY})")
       @x = nextX
       @y = nextY
       changed
@@ -52,7 +55,10 @@
   draw = () =>
 
     if @dirty
-      savedFillStyle = @context.fillStyle
+      saved = _saveContextProperties(@context)
+
+      @context.fillStyle = "white"
+      @context.fillRect(0, 0, @width, @height)
 
       for ball in @balls
         @context.globalCompositeOperation = "multiply"
@@ -65,9 +71,18 @@
       for ball in @balls
         @dirty = @dirty || ball.readOffset(imageData)
 
-      @context.fillStyle = savedFillStyle
+      saved.restore()
 
     requestAnimationFrame(draw)
+
+  _saveContextProperties = (context) =>
+    globalCompositeOperation = context.globalCompositeOperation
+    fillStyle = context.fillStyle
+    {
+      restore: () =>
+        @context.globalCompositeOperation = globalCompositeOperation
+        @context.fillStyle = fillStyle
+    }
 
   addEventListener("DOMContentLoaded", detect)
 )(document, navigator)
