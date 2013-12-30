@@ -10,10 +10,11 @@
         this.x = x;
         this.y = y;
         this._clamp = __bind(this._clamp, this);
+        this._threshold = __bind(this._threshold, this);
         this.readOffset = __bind(this.readOffset, this);
         this.gradient = __bind(this.gradient, this);
         this.draw = __bind(this.draw, this);
-        this.radius = 50;
+        this.radius = 100;
       }
 
       Ball.prototype.draw = function(context) {
@@ -28,7 +29,7 @@
         gradient = context.createLinearGradient(this.x - this.radius, this.y - this.radius, this.x + this.radius, this.y + this.radius);
         gradient.addColorStop(0, "white");
         gradient.addColorStop(0.5, "rgb(128,128,0)");
-        gradient.addColorStop(1, "white");
+        gradient.addColorStop(1, "black");
         return gradient;
       };
 
@@ -39,8 +40,8 @@
         g = imageData.data[pos + 1];
         console.log("" + r + "," + g);
         scale = 16;
-        velocityX = Math.floor((r - 128) / scale);
-        velocityY = Math.floor((g - 128) / scale);
+        velocityX = this._threshold(Math.floor((r - 128) / scale), 5);
+        velocityY = this._threshold(Math.floor((g - 128) / scale), 5);
         nextX = this._clamp(this.x + velocityX, 0, imageData.width - 1);
         nextY = this._clamp(this.y + velocityY, 0, imageData.height - 1);
         changed = !(nextX === this.x && nextY === this.y);
@@ -50,6 +51,14 @@
         this.x = nextX;
         this.y = nextY;
         return changed;
+      };
+
+      Ball.prototype._threshold = function(value, threshold) {
+        if (Math.abs(value) < threshold) {
+          return 0;
+        } else {
+          return value;
+        }
       };
 
       Ball.prototype._clamp = function(value, min, max) {
@@ -63,22 +72,18 @@
       return initialize();
     };
     initialize = function() {
-      var i, numBalls;
       console.log("Starting");
       _this.canvas = doc.getElementById("balls");
       _this.width = canvas.width;
       _this.height = canvas.height;
       _this.context = canvas.getContext("2d");
-      numBalls = 20;
-      _this.balls = (function() {
-        var _i, _results;
-        _results = [];
-        for (i = _i = 0; 0 <= numBalls ? _i < numBalls : _i > numBalls; i = 0 <= numBalls ? ++_i : --_i) {
-          _results.push(new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height)));
-        }
-        return _results;
-      })();
+      _this.balls = [];
+      _this.balls.push(new Ball(0.40 * _this.width, 0.40 * _this.height));
+      _this.balls.push(new Ball(0.40 * _this.width, 0.60 * _this.height));
       _this.dirty = true;
+      _this.canvas.onclick = function() {
+        return _this.dirty = true;
+      };
       draw();
       return console.log("Started");
     };
@@ -86,12 +91,12 @@
       var ball, dirty, imageData, saved, _i, _j, _len, _len1, _ref, _ref1;
       if (_this.dirty) {
         saved = _saveContextProperties(_this.context);
-        _this.context.fillStyle = "white";
+        _this.context.fillStyle = "black";
         _this.context.fillRect(0, 0, _this.width, _this.height);
         _ref = _this.balls;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ball = _ref[_i];
-          _this.context.globalCompositeOperation = "multiply";
+          _this.context.globalCompositeOperation = "lighter";
           ball.draw(_this.context);
         }
         imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
@@ -100,7 +105,6 @@
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           ball = _ref1[_j];
           dirty = ball.readOffset(imageData);
-          _this.dirty = _this.dirty || dirty;
         }
         saved.restore();
       }

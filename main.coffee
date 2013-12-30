@@ -2,7 +2,7 @@
 
   class Ball
     constructor: (@x, @y) ->
-      @radius = 50
+      @radius = 100
 
     draw: (context) =>
       context.beginPath();
@@ -11,17 +11,10 @@
       context.fill()
 
     gradient: (context) =>
-#      console.dir(this)
       gradient = context.createLinearGradient(@x - @radius, @y - @radius, @x + @radius,@y + @radius)
-#      gradient.addColorStop(0, '#00C9FF')
-#      gradient.addColorStop(0.8, '#00B5E2')
-#      gradient.addColorStop(1, 'rgba(0,201,255,0)')
-#      gradient.addColorStop(0, '#000000')
-#      gradient.addColorStop(0.99, '#FFFF00')
-#      gradient.addColorStop(1, '#000000')
       gradient.addColorStop(0, "white")
       gradient.addColorStop(0.5, "rgb(128,128,0)")
-      gradient.addColorStop(1, "white")
+      gradient.addColorStop(1, "black")
       gradient
 
     readOffset: (imageData) =>
@@ -32,8 +25,8 @@
       console.log("#{r},#{g}")
 
       scale = 16
-      velocityX = Math.floor((r - 128) / scale)
-      velocityY = Math.floor((g - 128) / scale)
+      velocityX = @_threshold(Math.floor((r - 128) / scale), 5)
+      velocityY = @_threshold(Math.floor((g - 128) / scale), 5)
 
       nextX = @_clamp(@x + velocityX, 0, imageData.width - 1)
       nextY = @_clamp(@y + velocityY, 0, imageData.height - 1)
@@ -43,6 +36,12 @@
       @x = nextX
       @y = nextY
       changed
+
+    _threshold: (value, threshold) =>
+      if Math.abs(value) < threshold
+        0
+      else
+        value
 
     _clamp: (value, min, max) =>
       Math.min(max, Math.max(min, value))
@@ -59,10 +58,23 @@
 
     @context = canvas.getContext("2d");
 
-    numBalls = 20
-    @balls = for i in [0...numBalls]
-      new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height))
+#    numBalls = 20
+#    @balls = for i in [0...numBalls]
+#      new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height))
+
+    @balls = []
+#    proportions = [0.40, 0.60]
+#    for w in proportions
+#      for h in proportions
+#        @balls.push(new Ball(w * @width, h * @height))
+
+    @balls.push(new Ball(0.40 * @width, 0.40 * @height))
+    @balls.push(new Ball(0.40 * @width, 0.60 * @height))
+
     @dirty = true
+
+    @canvas.onclick = () =>
+      @dirty = true
 
     draw()
 
@@ -73,7 +85,7 @@
     if @dirty
       saved = _saveContextProperties(@context)
 
-      @context.fillStyle = "white"
+      @context.fillStyle = "black"
       @context.fillRect(0, 0, @width, @height)
 
 #      @p = 100
@@ -89,7 +101,7 @@
 #      @context.fillRect(@p + @size, @p + @size, 5, 5)
 
       for ball in @balls
-        @context.globalCompositeOperation = "multiply"
+        @context.globalCompositeOperation = "lighter"
         ball.draw(@context)
 
       imageData = @context.getImageData(0, 0, @width, @height)
@@ -97,7 +109,7 @@
       @dirty = false
       for ball in @balls
         dirty = ball.readOffset(imageData)
-        @dirty = @dirty || dirty
+#        @dirty = @dirty || dirty
 
       saved.restore()
 
