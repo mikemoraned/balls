@@ -27,7 +27,12 @@
     };
 
     VectorReader.prototype._interpretAsVelocity = function(positive, negative) {
-      return ((positive / 255.0) - (negative / 255.0)) * this.maxMagnitude;
+      var scale,
+        _this = this;
+      scale = function(value) {
+        return (value / 255.0) * _this.maxMagnitude;
+      };
+      return Math.ceil(scale(positive)) - Math.ceil(scale(negative));
     };
 
     return VectorReader;

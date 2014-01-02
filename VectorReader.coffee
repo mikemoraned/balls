@@ -20,6 +20,8 @@ class VectorReader
     }
 
   _interpretAsVelocity: (positive, negative) =>
-    ((positive / 255.0) - (negative / 255.0)) * @maxMagnitude
+    scale = (value) =>
+      (value / 255.0) * @maxMagnitude
+    Math.ceil(scale(positive)) - Math.ceil(scale(negative))
 
 window.VectorReader = VectorReader

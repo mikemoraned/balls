@@ -5,10 +5,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VectorReader.coffee" afterPath="$PROJECT_DIR$/VectorReader.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VectorReader.js" afterPath="$PROJECT_DIR$/VectorReader.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VectorReader.map" afterPath="$PROJECT_DIR$/VectorReader.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/VectorReader.spec.coffee" afterPath="$PROJECT_DIR$/test/VectorReader.spec.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/VectorReader.spec.js" afterPath="$PROJECT_DIR$/test/VectorReader.spec.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/VectorReader.spec.map" afterPath="$PROJECT_DIR$/test/VectorReader.spec.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="balls.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -49,19 +45,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.coffee" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="main.coffee" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1" column="0" selection-start="15" selection-end="15" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2265">
+            <state line="1" column="0" selection-start="15" selection-end="15" vertical-scroll-proportion="0.017045455" vertical-offset="0" max-vertical-offset="2265">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VectorReader.coffee" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="VectorReader.coffee" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/VectorReader.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="34" selection-start="54" selection-end="54" vertical-scroll-proportion="0.03409091" vertical-offset="0" max-vertical-offset="880">
+            <state line="25" column="0" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="480">
               <folding />
             </state>
           </provider>
@@ -80,7 +76,10 @@
         <entry file="file://$PROJECT_DIR$/test/VectorReader.spec.coffee">
           <provider selected="true" editor-type-id="text-editor">
             <state line="118" column="34" selection-start="2992" selection-end="2992" vertical-scroll-proportion="0.0" vertical-offset="1040" max-vertical-offset="1920">
-              <folding />
+              <folding>
+                <marker date="1388678004000" expanded="true" signature="34:3011" placeholder="..." />
+                <marker date="1388678004000" expanded="true" signature="145:3007" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -107,8 +106,8 @@
         <option value="$PROJECT_DIR$/main.coffee" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/test/index.html" />
-        <option value="$PROJECT_DIR$/VectorReader.coffee" />
         <option value="$PROJECT_DIR$/test/VectorReader.spec.coffee" />
+        <option value="$PROJECT_DIR$/VectorReader.coffee" />
       </list>
     </option>
   </component>
@@ -365,20 +364,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="15" selection-end="15" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2265">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="263" selection-end="302" vertical-scroll-proportion="-7.5" vertical-offset="0" max-vertical-offset="330">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="86" selection-start="438" selection-end="438" vertical-scroll-proportion="-8.125" vertical-offset="0" max-vertical-offset="435">
@@ -389,13 +374,30 @@
     <entry file="file://$PROJECT_DIR$/test/VectorReader.spec.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state line="118" column="34" selection-start="2992" selection-end="2992" vertical-scroll-proportion="0.0" vertical-offset="1040" max-vertical-offset="1920">
+          <folding>
+            <marker date="1388678004000" expanded="true" signature="34:3011" placeholder="..." />
+            <marker date="1388678004000" expanded="true" signature="145:3007" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="0" selection-start="263" selection-end="302" vertical-scroll-proportion="-7.5" vertical-offset="0" max-vertical-offset="330">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/VectorReader.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="34" selection-start="54" selection-end="54" vertical-scroll-proportion="0.03409091" vertical-offset="0" max-vertical-offset="880">
+        <state line="25" column="0" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="480">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="15" selection-end="15" vertical-scroll-proportion="0.017045455" vertical-offset="0" max-vertical-offset="2265">
           <folding />
         </state>
       </provider>
