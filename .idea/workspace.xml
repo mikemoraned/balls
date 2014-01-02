@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0cd27f12-1db6-4f10-ba61-4b2f1fe10f1a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/VectorReader.coffee" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/VectorReader.spec.coffee" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.coffee" afterPath="$PROJECT_DIR$/main.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.js" afterPath="$PROJECT_DIR$/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.map" afterPath="$PROJECT_DIR$/main.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/VectorReader.spec.coffee" afterPath="$PROJECT_DIR$/test/VectorReader.spec.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/VectorReader.spec.js" afterPath="$PROJECT_DIR$/test/VectorReader.spec.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/VectorReader.spec.map" afterPath="$PROJECT_DIR$/test/VectorReader.spec.map" />
     </list>
     <ignored path="balls.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -80,7 +75,7 @@
       <file leaf-file-name="VectorReader.spec.coffee" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/VectorReader.spec.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="0" selection-start="32" selection-end="32" vertical-scroll-proportion="0.03409091" vertical-offset="0" max-vertical-offset="880">
+            <state line="27" column="33" selection-start="559" selection-end="559" vertical-scroll-proportion="0.46022728" vertical-offset="0" max-vertical-offset="880">
               <folding />
             </state>
           </provider>
@@ -396,7 +391,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test/VectorReader.spec.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="0" selection-start="32" selection-end="32" vertical-scroll-proportion="0.03409091" vertical-offset="0" max-vertical-offset="880">
+        <state line="27" column="33" selection-start="559" selection-end="559" vertical-scroll-proportion="0.46022728" vertical-offset="0" max-vertical-offset="880">
           <folding />
         </state>
       </provider>

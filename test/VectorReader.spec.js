@@ -3,27 +3,30 @@
   var _this = this;
 
   describe('VectorReader', function() {
+    var baseImageData;
+    baseImageData = {
+      width: 1,
+      height: 1,
+      data: [0, 0, 0, 0]
+    };
     return describe('readVectorAt', function() {
-      it('can read zero movement', function() {
-        var imageData, reader, vector;
+      var imageData, reader;
+      reader = null;
+      imageData = null;
+      beforeEach(function() {
         reader = new VectorReader;
-        imageData = {
-          width: 1,
-          height: 1,
-          data: [0, 0, 0, 0]
-        };
+        return imageData = _.extend({}, baseImageData);
+      });
+      it('can read zero movement', function() {
+        var vector;
+        imageData.data = [0, 0, 0, 0];
         vector = reader.readVectorAt(0, 0, imageData);
         assert.equal(vector.x, 0);
         return assert.equal(vector.y, 0);
       });
       return it('can read max negative x', function() {
-        var imageData, reader, vector;
-        reader = new VectorReader;
-        imageData = {
-          width: 1,
-          height: 1,
-          data: [0, 0, 255, 0]
-        };
+        var vector;
+        imageData.data = [0, 0, 255, 0];
         vector = reader.readVectorAt(0, 0, imageData);
         assert.equal(vector.x, -1.0);
         return assert.equal(vector.y, 0);

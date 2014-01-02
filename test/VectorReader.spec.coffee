@@ -1,14 +1,22 @@
 describe('VectorReader', () =>
 
+  baseImageData = {
+    width: 1
+    height: 1
+    data: [0, 0, 0, 0]
+  }
+
   describe('readVectorAt', () =>
 
-    it('can read zero movement', () =>
+    reader = null
+    imageData = null
+    beforeEach(() =>
       reader = new VectorReader
-      imageData = {
-        width: 1
-        height: 1
-        data: [0, 0, 0, 0]
-      }
+      imageData = _.extend({}, baseImageData)
+    )
+
+    it('can read zero movement', () =>
+      imageData.data = [0, 0, 0, 0]
 
       vector = reader.readVectorAt(0, 0, imageData)
 
@@ -17,12 +25,7 @@ describe('VectorReader', () =>
     )
 
     it('can read max negative x', () =>
-      reader = new VectorReader
-      imageData = {
-        width: 1
-        height: 1
-        data: [0, 0, 255, 0]
-      }
+      imageData.data = [0, 0, 255, 0]
 
       vector = reader.readVectorAt(0, 0, imageData)
 
