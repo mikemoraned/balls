@@ -1,5 +1,7 @@
 class VectorReader
 
+  constructor: (@maxMagnitude = 10) ->
+
   readVectorAt: (x, y, imageData) =>
     pos = ((y * imageData.width) + x) * 4
     r = imageData.data[pos]
@@ -7,26 +9,17 @@ class VectorReader
     b = imageData.data[pos + 2]
     a = imageData.data[pos + 3]
 
-    maxMagnitude = 1
-    velocityX = ((r - b) / 255.0) * maxMagnitude
-    velocityY = ((g - a) / 255.0) * maxMagnitude
-
-    #      scale = 16
-    #      velocityX = @_threshold(Math.floor((r - 128) / scale), 5)
-    #      velocityY = @_threshold(Math.floor((g - 128) / scale), 5)
+    velocityX = @_interpretAsVelocity(r, b)
+    velocityY = @_interpretAsVelocity(g, a)
 
     console.log("#{r},#{g},#{b},#{a} -> #{velocityX},#{velocityY}")
 
     {
-    x: velocityX
-    y: velocityY
+      x: velocityX
+      y: velocityY
     }
 
-  _threshold: (value, threshold) =>
-    value
-#      if Math.abs(value) < threshold
-#        0
-#      else
-#        value
+  _interpretAsVelocity: (positive, negative) =>
+    ((positive / 255.0) - (negative / 255.0)) * @maxMagnitude
 
 window.VectorReader = VectorReader

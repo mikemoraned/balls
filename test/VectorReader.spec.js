@@ -14,22 +14,89 @@
       reader = null;
       imageData = null;
       beforeEach(function() {
-        reader = new VectorReader;
+        reader = new VectorReader(100);
         return imageData = _.extend({}, baseImageData);
       });
-      it('can read zero movement', function() {
-        var vector;
-        imageData.data = [0, 0, 0, 0];
-        vector = reader.readVectorAt(0, 0, imageData);
-        assert.equal(vector.x, 0);
-        return assert.equal(vector.y, 0);
+      describe('basic', function() {
+        it('can read zero movement', function() {
+          var vector;
+          imageData.data = [0, 0, 0, 0];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 0);
+          return assert.equal(vector.y, 0);
+        });
+        it('can read max negative x', function() {
+          var vector;
+          imageData.data = [0, 0, 255, 0];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, -100);
+          return assert.equal(vector.y, 0);
+        });
+        it('can read max negative y', function() {
+          var vector;
+          imageData.data = [0, 0, 0, 255];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 0);
+          return assert.equal(vector.y, -100);
+        });
+        it('can read max positive x', function() {
+          var vector;
+          imageData.data = [255, 0, 0, 0];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 100);
+          return assert.equal(vector.y, 0);
+        });
+        return it('can read max positive y', function() {
+          var vector;
+          imageData.data = [0, 255, 0, 0];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 0);
+          return assert.equal(vector.y, 100);
+        });
       });
-      return it('can read max negative x', function() {
-        var vector;
-        imageData.data = [0, 0, 255, 0];
-        vector = reader.readVectorAt(0, 0, imageData);
-        assert.equal(vector.x, -1.0);
-        return assert.equal(vector.y, 0);
+      return describe('mixed', function() {
+        it('positive and negative x components combine to cancel out', function() {
+          var vector;
+          imageData.data = [255, 0, 255, 0];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 0);
+          return assert.equal(vector.y, 0);
+        });
+        it('positive and negative y components combine to cancel out', function() {
+          var vector;
+          imageData.data = [0, 255, 0, 255];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 0);
+          return assert.equal(vector.y, 0);
+        });
+        it('unequal positive and negative x components combine to produce positive x', function() {
+          var vector;
+          imageData.data = [128, 0, 65, 0];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 25);
+          return assert.equal(vector.y, 0);
+        });
+        it('unequal positive and negative x components combine to produce negative x', function() {
+          var vector;
+          imageData.data = [65, 0, 128, 0];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, -25);
+          return assert.equal(vector.y, 0);
+        });
+        it('unequal positive and negative y components combine to produce positive y', function() {
+          var vector;
+          imageData.data = [0, 128, 0, 65];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 0);
+          return assert.equal(vector.y, 25);
+        });
+        return it('unequal positive and negative y components combine to produce negative y', function() {
+          var vector;
+          imageData.data = [0, 65, 0, 128];
+          vector = reader.readVectorAt(0, 0, imageData);
+          assert.equal(vector.x, 0);
+          return assert.equal(vector.y, -25);
+        });
       });
     });
   });
