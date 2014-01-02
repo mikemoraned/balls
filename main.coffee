@@ -7,8 +7,8 @@
     draw: (context) =>
       context.beginPath();
       context.arc(@x, @y, @radius, 0, 2 * Math.PI, false);
-      context.strokeStyle = "red"
-      context.stroke()
+      context.fillStyle = "white"
+      context.fill()
 
     readOffset: (imageData) =>
       velocity = @reader.readVectorAt(@x, @y, imageData)
@@ -85,26 +85,27 @@
       @context.fillRect(0, 0, @width, @height)
 
       @context.globalCompositeOperation = "lighter"
-#
-#      @context.fillStyle = "rgba(0,0,0,1)"
-#      @context.fillRect(0, 0, @width / 2, @height)
-#      @context.fillStyle = "rgba(0,1,0,1)"
-#      @context.fillRect(@width / 2, 0, @width, @height)
-#
-#      @context.fillStyle = "rgba(0,0,0,1)"
-#      @context.fillRect(0, 0, @width, @height / 2)
-#      @context.fillStyle = "rgba(1,0,0,1)"
-#      @context.fillRect(0, @height / 2, @width, @height)
+
+      maxValue = 255
+      @context.fillStyle = "rgba(0,0,0,#{maxValue})"
+      @context.fillRect(0, 0, @width / 2, @height)
+      @context.fillStyle = "rgba(0,#{maxValue},0,#{maxValue})"
+      @context.fillRect(@width / 2, 0, @width, @height)
+
+      @context.fillStyle = "rgba(0,0,0,#{maxValue})"
+      @context.fillRect(0, 0, @width, @height / 2)
+      @context.fillStyle = "rgba(#{maxValue},0,0,#{maxValue})"
+      @context.fillRect(0, @height / 2, @width, @height)
 
 #      @context.globalCompositeOperation = "multiply"
-      radial = @context.createRadialGradient(
-        (@width / 2) - 5, (@height / 2) - 5, 10,
-        (@width / 2) - 5, (@height / 2) - 5, @height / 2)
-      radial.addColorStop(0, "black")
-      radial.addColorStop(0.99, "white")
-      radial.addColorStop(1, "rgba(0, 0, 0, 0)")
-      @context.fillStyle = radial
-      @context.fillRect(0, 0, @width, @height)
+#      radial = @context.createRadialGradient(
+#        (@width / 2) - 5, (@height / 2) - 5, 10,
+#        (@width / 2) - 5, (@height / 2) - 5, @height / 2)
+#      radial.addColorStop(0, "black")
+#      radial.addColorStop(0.99, "white")
+#      radial.addColorStop(1, "rgba(0, 0, 0, 0)")
+#      @context.fillStyle = radial
+#      @context.fillRect(0, 0, @width, @height)
 
 #      gradientA = @context.createLinearGradient(0, 0, 0, @height)
 #      gradientA.addColorStop(0, "rgb(0,0,0)")
@@ -118,16 +119,16 @@
 #      @context.fillStyle = gradientB
 #      @context.fillRect(0, 0, @width, @height)
 
-      @context.globalCompositeOperation = "lighter"
-      for ball in @balls
-        ball.draw(@context)
-
       imageData = @context.getImageData(0, 0, @width, @height)
 
       @dirty = false
       for ball in @balls
         dirty = ball.readOffset(imageData)
         @dirty = @dirty || dirty
+
+      @context.globalCompositeOperation = "lighten"
+      for ball in @balls
+        ball.draw(@context)
 
       saved.restore()
 
