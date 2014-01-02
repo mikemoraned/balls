@@ -3,14 +3,45 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   (function(doc, nav) {
-    var Ball, detect, draw, initialize, _saveContextProperties,
+    var Ball, VectorReader, detect, draw, initialize, _saveContextProperties,
       _this = this;
+    VectorReader = (function() {
+      function VectorReader() {
+        this._threshold = __bind(this._threshold, this);
+        this.readVectorAt = __bind(this.readVectorAt, this);
+      }
+
+      VectorReader.prototype.readVectorAt = function(x, y, imageData) {
+        var g, pos, r, scale, velocityX, velocityY;
+        pos = ((y * imageData.width) + x) * 4;
+        r = imageData.data[pos];
+        g = imageData.data[pos + 1];
+        scale = 16;
+        velocityX = this._threshold(Math.floor((r - 128) / scale), 5);
+        velocityY = this._threshold(Math.floor((g - 128) / scale), 5);
+        return {
+          x: velocityX,
+          y: velocityY
+        };
+      };
+
+      VectorReader.prototype._threshold = function(value, threshold) {
+        if (Math.abs(value) < threshold) {
+          return 0;
+        } else {
+          return value;
+        }
+      };
+
+      return VectorReader;
+
+    })();
     Ball = (function() {
-      function Ball(x, y) {
+      function Ball(x, y, reader) {
         this.x = x;
         this.y = y;
+        this.reader = reader;
         this._clamp = __bind(this._clamp, this);
-        this._threshold = __bind(this._threshold, this);
         this.readOffset = __bind(this.readOffset, this);
         this.draw = __bind(this.draw, this);
         this.radius = 10;
@@ -24,27 +55,14 @@
       };
 
       Ball.prototype.readOffset = function(imageData) {
-        var changed, g, nextX, nextY, pos, r, scale, velocityX, velocityY;
-        pos = ((this.y * imageData.width) + this.x) * 4;
-        r = imageData.data[pos];
-        g = imageData.data[pos + 1];
-        scale = 16;
-        velocityX = this._threshold(Math.floor((r - 128) / scale), 5);
-        velocityY = this._threshold(Math.floor((g - 128) / scale), 5);
-        nextX = this._clamp(this.x + velocityX, 0, imageData.width - 1);
-        nextY = this._clamp(this.y + velocityY, 0, imageData.height - 1);
+        var changed, nextX, nextY, velocity;
+        velocity = this.reader.readVectorAt(this.x, this.y, imageData);
+        nextX = this._clamp(this.x + velocity.x, 0, imageData.width - 1);
+        nextY = this._clamp(this.y + velocity.y, 0, imageData.height - 1);
         changed = !(nextX === this.x && nextY === this.y);
         this.x = nextX;
         this.y = nextY;
         return changed;
-      };
-
-      Ball.prototype._threshold = function(value, threshold) {
-        if (Math.abs(value) < threshold) {
-          return 0;
-        } else {
-          return value;
-        }
       };
 
       Ball.prototype._clamp = function(value, min, max) {
@@ -64,20 +82,21 @@
       _this.width = canvas.width;
       _this.height = canvas.height;
       _this.context = canvas.getContext("2d");
+      _this.reader = new VectorReader;
       numBalls = 5000;
       _this.balls = (function() {
         var _i, _results;
         _results = [];
         for (i = _i = 0; 0 <= numBalls ? _i < numBalls : _i > numBalls; i = 0 <= numBalls ? ++_i : --_i) {
-          _results.push(new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height)));
+          _results.push(new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height), this.reader));
         }
         return _results;
-      })();
+      }).call(_this);
       _this.dirty = true;
       _this.canvas.addEventListener('click', function(e) {
         if (e.shiftKey) {
           console.log("Adding");
-          _this.balls.push(new Ball(e.offsetX, e.offsetY));
+          _this.balls.push(new Ball(e.offsetX, e.offsetY, _this.reader));
           return _this.dirty = true;
         } else {
           console.log("Marking as dirty");
@@ -85,15 +104,13 @@
         }
       });
       _this.canvas.addEventListener('mousemove', function(e) {
-        var g, imageData, pos, r, x, y;
+        var imageData, velocity, x, y;
         if (e.altKey) {
           imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
           x = e.offsetX;
           y = e.offsetY;
-          pos = ((y * imageData.width) + x) * 4;
-          r = imageData.data[pos];
-          g = imageData.data[pos + 1];
-          return console.log("" + x + "," + y + ": r: " + r + ", g: " + g);
+          velocity = _this.reader.readVectorAt(x, y, imageData);
+          return console.log("" + x + "," + y + ": v.x: " + velocity.x + ", v.y: " + velocity.y);
         }
       });
       draw();
@@ -119,7 +136,6 @@
         _ref = _this.balls;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ball = _ref[_i];
-          _this.context.globalCompositeOperation = "lighter";
           ball.draw(_this.context);
         }
         imageData = _this.context.getImageData(0, 0, _this.width, _this.height);

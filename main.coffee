@@ -1,49 +1,50 @@
 ((doc, nav) ->
 
-  class Ball
-    constructor: (@x, @y) ->
-      @radius = 10
+  class VectorReader
 
-    draw: (context) =>
-      context.beginPath();
-      context.arc(@x, @y, @radius, 0, 2 * Math.PI, false);
-#      context.fillStyle = @gradient(context)
-#      context.fill()
-      context.strokeStyle = "red"
-      context.stroke()
-
-#    gradient: (context) =>
-#      gradient = context.createLinearGradient(@x - @radius, @y - @radius, @x + @radius,@y + @radius)
-#      gradient.addColorStop(0, "white")
-#      gradient.addColorStop(0.5, "rgb(128,128,0)")
-#      gradient.addColorStop(1, "black")
-#      gradient
-
-    readOffset: (imageData) =>
-      pos = ((@y * imageData.width) + @x) * 4
+    readVectorAt: (x, y, imageData) =>
+      pos = ((y * imageData.width) + x) * 4
       r = imageData.data[pos]
       g = imageData.data[pos + 1]
 
-#      console.log("#{r},#{g}")
+      #      console.log("#{r},#{g}")
 
       scale = 16
       velocityX = @_threshold(Math.floor((r - 128) / scale), 5)
       velocityY = @_threshold(Math.floor((g - 128) / scale), 5)
 
-      nextX = @_clamp(@x + velocityX, 0, imageData.width - 1)
-      nextY = @_clamp(@y + velocityY, 0, imageData.height - 1)
-      changed = !(nextX == @x && nextY == @y)
-#      if (changed)
-#        console.dir("(#{@x},#{@y}) => (#{nextX},#{nextY})")
-      @x = nextX
-      @y = nextY
-      changed
+      {
+        x: velocityX
+        y: velocityY
+      }
 
     _threshold: (value, threshold) =>
       if Math.abs(value) < threshold
         0
       else
         value
+
+  class Ball
+    constructor: (@x, @y, @reader) ->
+      @radius = 10
+
+    draw: (context) =>
+      context.beginPath();
+      context.arc(@x, @y, @radius, 0, 2 * Math.PI, false);
+      context.strokeStyle = "red"
+      context.stroke()
+
+    readOffset: (imageData) =>
+      velocity = @reader.readVectorAt(@x, @y, imageData)
+
+      nextX = @_clamp(@x + velocity.x, 0, imageData.width - 1)
+      nextY = @_clamp(@y + velocity.y, 0, imageData.height - 1)
+      changed = !(nextX == @x && nextY == @y)
+#      if (changed)
+#        console.dir("(#{@x},#{@y}) => (#{nextX},#{nextY})")
+      @x = nextX
+      @y = nextY
+      changed
 
     _clamp: (value, min, max) =>
       Math.min(max, Math.max(min, value))
@@ -60,18 +61,11 @@
 
     @context = canvas.getContext("2d");
 
+    @reader = new VectorReader
+
     numBalls = 5000
     @balls = for i in [0...numBalls]
-      new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height))
-
-#    @balls = []
-#    proportions = [0.40, 0.60]
-#    for w in proportions
-#      for h in proportions
-#        @balls.push(new Ball(w * @width, h * @height))
-
-#    @balls.push(new Ball(0.40 * @width, 0.40 * @height))
-#    @balls.push(new Ball(0.40 * @width, 0.60 * @height))
+      new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height), @reader)
 
     @dirty = true
 
@@ -79,7 +73,7 @@
 #      console.dir(e)
       if e.shiftKey
         console.log("Adding")
-        @balls.push(new Ball(e.offsetX, e.offsetY))
+        @balls.push(new Ball(e.offsetX, e.offsetY, @reader))
         @dirty = true
       else
         console.log("Marking as dirty")
@@ -91,10 +85,8 @@
         imageData = @context.getImageData(0, 0, @width, @height)
         x = e.offsetX
         y = e.offsetY
-        pos = ((y * imageData.width) + x) * 4
-        r = imageData.data[pos]
-        g = imageData.data[pos + 1]
-        console.log("#{x},#{y}: r: #{r}, g: #{g}")
+        velocity = @reader.readVectorAt(x, y, imageData)
+        console.log("#{x},#{y}: v.x: #{velocity.x}, v.y: #{velocity.y}")
     )
 
     draw()
@@ -109,7 +101,6 @@
       @context.fillStyle = "black"
       @context.fillRect(0, 0, @width, @height)
 
-#      @context.fillStyle = @context.createLinearGradient(0, 0, @width, @height)
       @context.globalCompositeOperation = "lighter"
 
       gradientA = @context.createLinearGradient(0, 0, 0, @height)
@@ -125,7 +116,7 @@
       @context.fillRect(0, 0, @width, @height)
 
       for ball in @balls
-        @context.globalCompositeOperation = "lighter"
+#        @context.globalCompositeOperation = "lighter"
         ball.draw(@context)
 
       imageData = @context.getImageData(0, 0, @width, @height)
