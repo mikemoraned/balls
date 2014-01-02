@@ -12,7 +12,7 @@ class VectorReader
     velocityX = @_interpretAsVelocity(r, b)
     velocityY = @_interpretAsVelocity(g, a)
 
-    console.log("#{r},#{g},#{b},#{a} -> #{velocityX},#{velocityY}")
+#    console.log("#{r},#{g},#{b},#{a} -> #{velocityX},#{velocityY}")
 
     {
       x: velocityX

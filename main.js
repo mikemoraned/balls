@@ -52,7 +52,7 @@
       _this.height = canvas.height;
       _this.context = canvas.getContext("2d");
       _this.reader = new VectorReader;
-      numBalls = 0;
+      numBalls = 1000;
       _this.balls = (function() {
         var _i, _results;
         _results = [];
@@ -90,19 +90,10 @@
         _this.context.fillStyle = "black";
         _this.context.fillRect(0, 0, _this.width, _this.height);
         _this.context.globalCompositeOperation = "lighter";
-        _this.context.fillStyle = "rgba(0,0,0,255)";
-        _this.context.fillRect(0, 0, _this.width / 2, _this.height);
-        _this.context.fillStyle = "rgba(0,255,0,255)";
-        _this.context.fillRect(_this.width / 2, 0, _this.width, _this.height);
-        _this.context.fillStyle = "rgba(0,0,0,255)";
-        _this.context.fillRect(0, 0, _this.width, _this.height / 2);
-        _this.context.fillStyle = "rgba(255,0,0,255)";
-        _this.context.fillRect(0, _this.height / 2, _this.width, _this.height);
-        _this.context.globalCompositeOperation = "multiply";
         radial = _this.context.createRadialGradient((_this.width / 2) - 5, (_this.height / 2) - 5, 10, (_this.width / 2) - 5, (_this.height / 2) - 5, _this.height / 2);
         radial.addColorStop(0, "black");
         radial.addColorStop(0.99, "white");
-        radial.addColorStop(1, "rgb(0, 0, 0)");
+        radial.addColorStop(1, "rgba(0, 0, 0, 0)");
         _this.context.fillStyle = radial;
         _this.context.fillRect(0, 0, _this.width, _this.height);
         _this.context.globalCompositeOperation = "lighter";

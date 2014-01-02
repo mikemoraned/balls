@@ -5,6 +5,9 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VectorReader.coffee" afterPath="$PROJECT_DIR$/VectorReader.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VectorReader.js" afterPath="$PROJECT_DIR$/VectorReader.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VectorReader.map" afterPath="$PROJECT_DIR$/VectorReader.map" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.coffee" afterPath="$PROJECT_DIR$/main.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.js" afterPath="$PROJECT_DIR$/main.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.map" afterPath="$PROJECT_DIR$/main.map" />
     </list>
     <ignored path="balls.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,7 +51,7 @@
       <file leaf-file-name="main.coffee" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1" column="0" selection-start="15" selection-end="15" vertical-scroll-proportion="0.017045455" vertical-offset="0" max-vertical-offset="2265">
+            <state line="104" column="45" selection-start="2947" selection-end="2947" vertical-scroll-proportion="0.6136364" vertical-offset="1020" max-vertical-offset="2265">
               <folding />
             </state>
           </provider>
@@ -57,7 +60,7 @@
       <file leaf-file-name="VectorReader.coffee" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/VectorReader.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="25" column="0" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="480">
+            <state line="15" column="0" selection-start="422" selection-end="422" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="480">
               <folding />
             </state>
           </provider>
@@ -103,11 +106,11 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/main.css" />
-        <option value="$PROJECT_DIR$/main.coffee" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/test/index.html" />
         <option value="$PROJECT_DIR$/test/VectorReader.spec.coffee" />
         <option value="$PROJECT_DIR$/VectorReader.coffee" />
+        <option value="$PROJECT_DIR$/main.coffee" />
       </list>
     </option>
   </component>
@@ -390,14 +393,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/VectorReader.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="0" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="480">
+        <state line="15" column="0" selection-start="422" selection-end="422" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="480">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="15" selection-end="15" vertical-scroll-proportion="0.017045455" vertical-offset="0" max-vertical-offset="2265">
+        <state line="104" column="45" selection-start="2947" selection-end="2947" vertical-scroll-proportion="0.6136364" vertical-offset="1020" max-vertical-offset="2265">
           <folding />
         </state>
       </provider>

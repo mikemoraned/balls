@@ -19,7 +19,6 @@
       a = imageData.data[pos + 3];
       velocityX = this._interpretAsVelocity(r, b);
       velocityY = this._interpretAsVelocity(g, a);
-      console.log("" + r + "," + g + "," + b + "," + a + " -> " + velocityX + "," + velocityY);
       return {
         x: velocityX,
         y: velocityY

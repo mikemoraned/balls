@@ -39,7 +39,7 @@
 
     @reader = new VectorReader
 
-    numBalls = 0
+    numBalls = 1000
     @balls = for i in [0...numBalls]
       new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height), @reader)
 
@@ -85,24 +85,24 @@
       @context.fillRect(0, 0, @width, @height)
 
       @context.globalCompositeOperation = "lighter"
+#
+#      @context.fillStyle = "rgba(0,0,0,1)"
+#      @context.fillRect(0, 0, @width / 2, @height)
+#      @context.fillStyle = "rgba(0,1,0,1)"
+#      @context.fillRect(@width / 2, 0, @width, @height)
+#
+#      @context.fillStyle = "rgba(0,0,0,1)"
+#      @context.fillRect(0, 0, @width, @height / 2)
+#      @context.fillStyle = "rgba(1,0,0,1)"
+#      @context.fillRect(0, @height / 2, @width, @height)
 
-      @context.fillStyle = "rgba(0,0,0,255)"
-      @context.fillRect(0, 0, @width / 2, @height)
-      @context.fillStyle = "rgba(0,255,0,255)"
-      @context.fillRect(@width / 2, 0, @width, @height)
-
-      @context.fillStyle = "rgba(0,0,0,255)"
-      @context.fillRect(0, 0, @width, @height / 2)
-      @context.fillStyle = "rgba(255,0,0,255)"
-      @context.fillRect(0, @height / 2, @width, @height)
-
-      @context.globalCompositeOperation = "multiply"
+#      @context.globalCompositeOperation = "multiply"
       radial = @context.createRadialGradient(
         (@width / 2) - 5, (@height / 2) - 5, 10,
         (@width / 2) - 5, (@height / 2) - 5, @height / 2)
       radial.addColorStop(0, "black")
       radial.addColorStop(0.99, "white")
-      radial.addColorStop(1, "rgb(0, 0, 0)")
+      radial.addColorStop(1, "rgba(0, 0, 0, 0)")
       @context.fillStyle = radial
       @context.fillRect(0, 0, @width, @height)
 
