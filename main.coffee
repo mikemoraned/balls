@@ -6,12 +6,18 @@
       pos = ((y * imageData.width) + x) * 4
       r = imageData.data[pos]
       g = imageData.data[pos + 1]
+      b = imageData.data[pos + 2]
+      a = imageData.data[pos + 3]
 
-      #      console.log("#{r},#{g}")
+      maxMagnitude = 1
+      velocityX = ((r - b) / 255.0) * maxMagnitude
+      velocityY = ((g - a) / 255.0) * maxMagnitude
 
-      scale = 16
-      velocityX = @_threshold(Math.floor((r - 128) / scale), 5)
-      velocityY = @_threshold(Math.floor((g - 128) / scale), 5)
+#      scale = 16
+#      velocityX = @_threshold(Math.floor((r - 128) / scale), 5)
+#      velocityY = @_threshold(Math.floor((g - 128) / scale), 5)
+
+      console.log("#{r},#{g},#{b},#{a} -> #{velocityX},#{velocityY}")
 
       {
         x: velocityX
@@ -19,10 +25,11 @@
       }
 
     _threshold: (value, threshold) =>
-      if Math.abs(value) < threshold
-        0
-      else
-        value
+      value
+#      if Math.abs(value) < threshold
+#        0
+#      else
+#        value
 
   class Ball
     constructor: (@x, @y, @reader) ->
@@ -63,7 +70,7 @@
 
     @reader = new VectorReader
 
-    numBalls = 5000
+    numBalls = 0
     @balls = for i in [0...numBalls]
       new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height), @reader)
 
@@ -87,13 +94,13 @@
       y = e.offsetY
       velocity = @reader.readVectorAt(x, y, imageData)
       console.log("#{x},#{y}: v.x: #{velocity.x}, v.y: #{velocity.y}")
-      @context.strokeStyle = "green"
-      @context.moveTo(x, y)
-      @context.lineTo(x + velocity.x, y)
-      @context.stroke()
-      @context.moveTo(x, y)
-      @context.lineTo(x, y + velocity.y)
-      @context.stroke()
+#      @context.strokeStyle = "green"
+#      @context.moveTo(x, y)
+#      @context.lineTo(x + velocity.x, y)
+#      @context.stroke()
+#      @context.moveTo(x, y)
+#      @context.lineTo(x, y + velocity.y)
+#      @context.stroke()
     )
 
     draw()
@@ -110,20 +117,40 @@
 
       @context.globalCompositeOperation = "lighter"
 
-      gradientA = @context.createLinearGradient(0, 0, 0, @height)
-      gradientA.addColorStop(0, "rgb(0,0,0)")
-      gradientA.addColorStop(1, "rgb(255,0,0)")
-      @context.fillStyle = gradientA
+      @context.fillStyle = "rgba(0,0,0,255)"
+      @context.fillRect(0, 0, @width / 2, @height)
+      @context.fillStyle = "rgba(0,255,0,255)"
+      @context.fillRect(@width / 2, 0, @width, @height)
+
+      @context.fillStyle = "rgba(0,0,0,255)"
+      @context.fillRect(0, 0, @width, @height / 2)
+      @context.fillStyle = "rgba(255,0,0,255)"
+      @context.fillRect(0, @height / 2, @width, @height)
+
+      @context.globalCompositeOperation = "multiply"
+      radial = @context.createRadialGradient(
+        (@width / 2) - 5, (@height / 2) - 5, 10,
+        (@width / 2) - 5, (@height / 2) - 5, @height / 2)
+      radial.addColorStop(0, "black")
+      radial.addColorStop(0.99, "white")
+      radial.addColorStop(1, "rgb(0, 0, 0)")
+      @context.fillStyle = radial
       @context.fillRect(0, 0, @width, @height)
 
-      gradientB = @context.createLinearGradient(0, 0, @width, 0)
-      gradientB.addColorStop(0, "rgb(0,0,0)")
-      gradientB.addColorStop(1, "rgb(0,255,0)")
-      @context.fillStyle = gradientB
-      @context.fillRect(0, 0, @width, @height)
+#      gradientA = @context.createLinearGradient(0, 0, 0, @height)
+#      gradientA.addColorStop(0, "rgb(0,0,0)")
+#      gradientA.addColorStop(1, "rgb(255,0,0)")
+#      @context.fillStyle = gradientA
+#      @context.fillRect(0, 0, @width, @height)
+#
+#      gradientB = @context.createLinearGradient(0, 0, @width, 0)
+#      gradientB.addColorStop(0, "rgb(0,0,0)")
+#      gradientB.addColorStop(1, "rgb(0,255,0)")
+#      @context.fillStyle = gradientB
+#      @context.fillRect(0, 0, @width, @height)
 
+      @context.globalCompositeOperation = "lighter"
       for ball in @balls
-#        @context.globalCompositeOperation = "lighter"
         ball.draw(@context)
 
       imageData = @context.getImageData(0, 0, @width, @height)

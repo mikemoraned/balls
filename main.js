@@ -12,13 +12,16 @@
       }
 
       VectorReader.prototype.readVectorAt = function(x, y, imageData) {
-        var g, pos, r, scale, velocityX, velocityY;
+        var a, b, g, maxMagnitude, pos, r, velocityX, velocityY;
         pos = ((y * imageData.width) + x) * 4;
         r = imageData.data[pos];
         g = imageData.data[pos + 1];
-        scale = 16;
-        velocityX = this._threshold(Math.floor((r - 128) / scale), 5);
-        velocityY = this._threshold(Math.floor((g - 128) / scale), 5);
+        b = imageData.data[pos + 2];
+        a = imageData.data[pos + 3];
+        maxMagnitude = 1;
+        velocityX = ((r - b) / 255.0) * maxMagnitude;
+        velocityY = ((g - a) / 255.0) * maxMagnitude;
+        console.log("" + r + "," + g + "," + b + "," + a + " -> " + velocityX + "," + velocityY);
         return {
           x: velocityX,
           y: velocityY
@@ -26,11 +29,7 @@
       };
 
       VectorReader.prototype._threshold = function(value, threshold) {
-        if (Math.abs(value) < threshold) {
-          return 0;
-        } else {
-          return value;
-        }
+        return value;
       };
 
       return VectorReader;
@@ -83,7 +82,7 @@
       _this.height = canvas.height;
       _this.context = canvas.getContext("2d");
       _this.reader = new VectorReader;
-      numBalls = 5000;
+      numBalls = 0;
       _this.balls = (function() {
         var _i, _results;
         _results = [];
@@ -109,35 +108,34 @@
         x = e.offsetX;
         y = e.offsetY;
         velocity = _this.reader.readVectorAt(x, y, imageData);
-        console.log("" + x + "," + y + ": v.x: " + velocity.x + ", v.y: " + velocity.y);
-        _this.context.strokeStyle = "green";
-        _this.context.moveTo(x, y);
-        _this.context.lineTo(x + velocity.x, y);
-        _this.context.stroke();
-        _this.context.moveTo(x, y);
-        _this.context.lineTo(x, y + velocity.y);
-        return _this.context.stroke();
+        return console.log("" + x + "," + y + ": v.x: " + velocity.x + ", v.y: " + velocity.y);
       });
       draw();
       return console.log("Started");
     };
     draw = function() {
-      var ball, dirty, gradientA, gradientB, imageData, saved, _i, _j, _len, _len1, _ref, _ref1;
+      var ball, dirty, imageData, radial, saved, _i, _j, _len, _len1, _ref, _ref1;
       if (_this.dirty) {
         saved = _saveContextProperties(_this.context);
         _this.context.fillStyle = "black";
         _this.context.fillRect(0, 0, _this.width, _this.height);
         _this.context.globalCompositeOperation = "lighter";
-        gradientA = _this.context.createLinearGradient(0, 0, 0, _this.height);
-        gradientA.addColorStop(0, "rgb(0,0,0)");
-        gradientA.addColorStop(1, "rgb(255,0,0)");
-        _this.context.fillStyle = gradientA;
+        _this.context.fillStyle = "rgba(0,0,0,255)";
+        _this.context.fillRect(0, 0, _this.width / 2, _this.height);
+        _this.context.fillStyle = "rgba(0,255,0,255)";
+        _this.context.fillRect(_this.width / 2, 0, _this.width, _this.height);
+        _this.context.fillStyle = "rgba(0,0,0,255)";
+        _this.context.fillRect(0, 0, _this.width, _this.height / 2);
+        _this.context.fillStyle = "rgba(255,0,0,255)";
+        _this.context.fillRect(0, _this.height / 2, _this.width, _this.height);
+        _this.context.globalCompositeOperation = "multiply";
+        radial = _this.context.createRadialGradient((_this.width / 2) - 5, (_this.height / 2) - 5, 10, (_this.width / 2) - 5, (_this.height / 2) - 5, _this.height / 2);
+        radial.addColorStop(0, "black");
+        radial.addColorStop(0.99, "white");
+        radial.addColorStop(1, "rgb(0, 0, 0)");
+        _this.context.fillStyle = radial;
         _this.context.fillRect(0, 0, _this.width, _this.height);
-        gradientB = _this.context.createLinearGradient(0, 0, _this.width, 0);
-        gradientB.addColorStop(0, "rgb(0,0,0)");
-        gradientB.addColorStop(1, "rgb(0,255,0)");
-        _this.context.fillStyle = gradientB;
-        _this.context.fillRect(0, 0, _this.width, _this.height);
+        _this.context.globalCompositeOperation = "lighter";
         _ref = _this.balls;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ball = _ref[_i];
