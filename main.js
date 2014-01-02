@@ -3,38 +3,8 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   (function(doc, nav) {
-    var Ball, VectorReader, detect, draw, initialize, _saveContextProperties,
+    var Ball, detect, draw, initialize, _saveContextProperties,
       _this = this;
-    VectorReader = (function() {
-      function VectorReader() {
-        this._threshold = __bind(this._threshold, this);
-        this.readVectorAt = __bind(this.readVectorAt, this);
-      }
-
-      VectorReader.prototype.readVectorAt = function(x, y, imageData) {
-        var a, b, g, maxMagnitude, pos, r, velocityX, velocityY;
-        pos = ((y * imageData.width) + x) * 4;
-        r = imageData.data[pos];
-        g = imageData.data[pos + 1];
-        b = imageData.data[pos + 2];
-        a = imageData.data[pos + 3];
-        maxMagnitude = 1;
-        velocityX = ((r - b) / 255.0) * maxMagnitude;
-        velocityY = ((g - a) / 255.0) * maxMagnitude;
-        console.log("" + r + "," + g + "," + b + "," + a + " -> " + velocityX + "," + velocityY);
-        return {
-          x: velocityX,
-          y: velocityY
-        };
-      };
-
-      VectorReader.prototype._threshold = function(value, threshold) {
-        return value;
-      };
-
-      return VectorReader;
-
-    })();
     Ball = (function() {
       function Ball(x, y, reader) {
         this.x = x;
@@ -49,8 +19,8 @@
       Ball.prototype.draw = function(context) {
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-        context.strokeStyle = "red";
-        return context.stroke();
+        context.fillStyle = "white";
+        return context.fill();
       };
 
       Ball.prototype.readOffset = function(imageData) {
@@ -82,7 +52,7 @@
       _this.height = canvas.height;
       _this.context = canvas.getContext("2d");
       _this.reader = new VectorReader;
-      numBalls = 0;
+      numBalls = 1000;
       _this.balls = (function() {
         var _i, _results;
         _results = [];
@@ -114,40 +84,34 @@
       return console.log("Started");
     };
     draw = function() {
-      var ball, dirty, imageData, radial, saved, _i, _j, _len, _len1, _ref, _ref1;
+      var ball, dirty, imageData, maxValue, saved, _i, _j, _len, _len1, _ref, _ref1;
       if (_this.dirty) {
         saved = _saveContextProperties(_this.context);
         _this.context.fillStyle = "black";
         _this.context.fillRect(0, 0, _this.width, _this.height);
         _this.context.globalCompositeOperation = "lighter";
-        _this.context.fillStyle = "rgba(0,0,0,255)";
+        maxValue = 255;
+        _this.context.fillStyle = "rgba(0,0,0," + maxValue + ")";
         _this.context.fillRect(0, 0, _this.width / 2, _this.height);
-        _this.context.fillStyle = "rgba(0,255,0,255)";
+        _this.context.fillStyle = "rgba(0," + maxValue + ",0," + maxValue + ")";
         _this.context.fillRect(_this.width / 2, 0, _this.width, _this.height);
-        _this.context.fillStyle = "rgba(0,0,0,255)";
+        _this.context.fillStyle = "rgba(0,0,0," + maxValue + ")";
         _this.context.fillRect(0, 0, _this.width, _this.height / 2);
-        _this.context.fillStyle = "rgba(255,0,0,255)";
+        _this.context.fillStyle = "rgba(" + maxValue + ",0,0," + maxValue + ")";
         _this.context.fillRect(0, _this.height / 2, _this.width, _this.height);
-        _this.context.globalCompositeOperation = "multiply";
-        radial = _this.context.createRadialGradient((_this.width / 2) - 5, (_this.height / 2) - 5, 10, (_this.width / 2) - 5, (_this.height / 2) - 5, _this.height / 2);
-        radial.addColorStop(0, "black");
-        radial.addColorStop(0.99, "white");
-        radial.addColorStop(1, "rgb(0, 0, 0)");
-        _this.context.fillStyle = radial;
-        _this.context.fillRect(0, 0, _this.width, _this.height);
-        _this.context.globalCompositeOperation = "lighter";
+        imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
+        _this.dirty = false;
         _ref = _this.balls;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ball = _ref[_i];
-          ball.draw(_this.context);
+          dirty = ball.readOffset(imageData);
+          _this.dirty = _this.dirty || dirty;
         }
-        imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
-        _this.dirty = false;
+        _this.context.globalCompositeOperation = "lighten";
         _ref1 = _this.balls;
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           ball = _ref1[_j];
-          dirty = ball.readOffset(imageData);
-          _this.dirty = _this.dirty || dirty;
+          ball.draw(_this.context);
         }
         saved.restore();
       }

@@ -1,36 +1,5 @@
 ((doc, nav) ->
 
-  class VectorReader
-
-    readVectorAt: (x, y, imageData) =>
-      pos = ((y * imageData.width) + x) * 4
-      r = imageData.data[pos]
-      g = imageData.data[pos + 1]
-      b = imageData.data[pos + 2]
-      a = imageData.data[pos + 3]
-
-      maxMagnitude = 1
-      velocityX = ((r - b) / 255.0) * maxMagnitude
-      velocityY = ((g - a) / 255.0) * maxMagnitude
-
-#      scale = 16
-#      velocityX = @_threshold(Math.floor((r - 128) / scale), 5)
-#      velocityY = @_threshold(Math.floor((g - 128) / scale), 5)
-
-      console.log("#{r},#{g},#{b},#{a} -> #{velocityX},#{velocityY}")
-
-      {
-        x: velocityX
-        y: velocityY
-      }
-
-    _threshold: (value, threshold) =>
-      value
-#      if Math.abs(value) < threshold
-#        0
-#      else
-#        value
-
   class Ball
     constructor: (@x, @y, @reader) ->
       @radius = 10
@@ -38,8 +7,8 @@
     draw: (context) =>
       context.beginPath();
       context.arc(@x, @y, @radius, 0, 2 * Math.PI, false);
-      context.strokeStyle = "red"
-      context.stroke()
+      context.fillStyle = "white"
+      context.fill()
 
     readOffset: (imageData) =>
       velocity = @reader.readVectorAt(@x, @y, imageData)
@@ -70,7 +39,7 @@
 
     @reader = new VectorReader
 
-    numBalls = 0
+    numBalls = 1000
     @balls = for i in [0...numBalls]
       new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height), @reader)
 
@@ -117,25 +86,26 @@
 
       @context.globalCompositeOperation = "lighter"
 
-      @context.fillStyle = "rgba(0,0,0,255)"
+      maxValue = 255
+      @context.fillStyle = "rgba(0,0,0,#{maxValue})"
       @context.fillRect(0, 0, @width / 2, @height)
-      @context.fillStyle = "rgba(0,255,0,255)"
+      @context.fillStyle = "rgba(0,#{maxValue},0,#{maxValue})"
       @context.fillRect(@width / 2, 0, @width, @height)
 
-      @context.fillStyle = "rgba(0,0,0,255)"
+      @context.fillStyle = "rgba(0,0,0,#{maxValue})"
       @context.fillRect(0, 0, @width, @height / 2)
-      @context.fillStyle = "rgba(255,0,0,255)"
+      @context.fillStyle = "rgba(#{maxValue},0,0,#{maxValue})"
       @context.fillRect(0, @height / 2, @width, @height)
 
-      @context.globalCompositeOperation = "multiply"
-      radial = @context.createRadialGradient(
-        (@width / 2) - 5, (@height / 2) - 5, 10,
-        (@width / 2) - 5, (@height / 2) - 5, @height / 2)
-      radial.addColorStop(0, "black")
-      radial.addColorStop(0.99, "white")
-      radial.addColorStop(1, "rgb(0, 0, 0)")
-      @context.fillStyle = radial
-      @context.fillRect(0, 0, @width, @height)
+#      @context.globalCompositeOperation = "multiply"
+#      radial = @context.createRadialGradient(
+#        (@width / 2) - 5, (@height / 2) - 5, 10,
+#        (@width / 2) - 5, (@height / 2) - 5, @height / 2)
+#      radial.addColorStop(0, "black")
+#      radial.addColorStop(0.99, "white")
+#      radial.addColorStop(1, "rgba(0, 0, 0, 0)")
+#      @context.fillStyle = radial
+#      @context.fillRect(0, 0, @width, @height)
 
 #      gradientA = @context.createLinearGradient(0, 0, 0, @height)
 #      gradientA.addColorStop(0, "rgb(0,0,0)")
@@ -149,16 +119,16 @@
 #      @context.fillStyle = gradientB
 #      @context.fillRect(0, 0, @width, @height)
 
-      @context.globalCompositeOperation = "lighter"
-      for ball in @balls
-        ball.draw(@context)
-
       imageData = @context.getImageData(0, 0, @width, @height)
 
       @dirty = false
       for ball in @balls
         dirty = ball.readOffset(imageData)
         @dirty = @dirty || dirty
+
+      @context.globalCompositeOperation = "lighten"
+      for ball in @balls
+        ball.draw(@context)
 
       saved.restore()
 
