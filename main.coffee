@@ -81,12 +81,19 @@
     )
 
     @canvas.addEventListener('mousemove', (e) =>
-      if e.altKey
-        imageData = @context.getImageData(0, 0, @width, @height)
-        x = e.offsetX
-        y = e.offsetY
-        velocity = @reader.readVectorAt(x, y, imageData)
-        console.log("#{x},#{y}: v.x: #{velocity.x}, v.y: #{velocity.y}")
+#      if e.altKey
+      imageData = @context.getImageData(0, 0, @width, @height)
+      x = e.offsetX
+      y = e.offsetY
+      velocity = @reader.readVectorAt(x, y, imageData)
+      console.log("#{x},#{y}: v.x: #{velocity.x}, v.y: #{velocity.y}")
+      @context.strokeStyle = "green"
+      @context.moveTo(x, y)
+      @context.lineTo(x + velocity.x, y)
+      @context.stroke()
+      @context.moveTo(x, y)
+      @context.lineTo(x, y + velocity.y)
+      @context.stroke()
     )
 
     draw()

@@ -105,13 +105,18 @@
       });
       _this.canvas.addEventListener('mousemove', function(e) {
         var imageData, velocity, x, y;
-        if (e.altKey) {
-          imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
-          x = e.offsetX;
-          y = e.offsetY;
-          velocity = _this.reader.readVectorAt(x, y, imageData);
-          return console.log("" + x + "," + y + ": v.x: " + velocity.x + ", v.y: " + velocity.y);
-        }
+        imageData = _this.context.getImageData(0, 0, _this.width, _this.height);
+        x = e.offsetX;
+        y = e.offsetY;
+        velocity = _this.reader.readVectorAt(x, y, imageData);
+        console.log("" + x + "," + y + ": v.x: " + velocity.x + ", v.y: " + velocity.y);
+        _this.context.strokeStyle = "green";
+        _this.context.moveTo(x, y);
+        _this.context.lineTo(x + velocity.x, y);
+        _this.context.stroke();
+        _this.context.moveTo(x, y);
+        _this.context.lineTo(x, y + velocity.y);
+        return _this.context.stroke();
       });
       draw();
       return console.log("Started");
