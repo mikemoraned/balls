@@ -1,49 +1,26 @@
 ((doc, nav) ->
 
   class Ball
-    constructor: (@x, @y) ->
+    constructor: (@x, @y, @reader) ->
       @radius = 10
 
     draw: (context) =>
       context.beginPath();
       context.arc(@x, @y, @radius, 0, 2 * Math.PI, false);
-#      context.fillStyle = @gradient(context)
-#      context.fill()
-      context.strokeStyle = "red"
-      context.stroke()
-
-#    gradient: (context) =>
-#      gradient = context.createLinearGradient(@x - @radius, @y - @radius, @x + @radius,@y + @radius)
-#      gradient.addColorStop(0, "white")
-#      gradient.addColorStop(0.5, "rgb(128,128,0)")
-#      gradient.addColorStop(1, "black")
-#      gradient
+      context.fillStyle = "white"
+      context.fill()
 
     readOffset: (imageData) =>
-      pos = ((@y * imageData.width) + @x) * 4
-      r = imageData.data[pos]
-      g = imageData.data[pos + 1]
+      velocity = @reader.readVectorAt(@x, @y, imageData)
 
-#      console.log("#{r},#{g}")
-
-      scale = 16
-      velocityX = @_threshold(Math.floor((r - 128) / scale), 5)
-      velocityY = @_threshold(Math.floor((g - 128) / scale), 5)
-
-      nextX = @_clamp(@x + velocityX, 0, imageData.width - 1)
-      nextY = @_clamp(@y + velocityY, 0, imageData.height - 1)
+      nextX = @_clamp(@x + velocity.x, 0, imageData.width - 1)
+      nextY = @_clamp(@y + velocity.y, 0, imageData.height - 1)
       changed = !(nextX == @x && nextY == @y)
 #      if (changed)
 #        console.dir("(#{@x},#{@y}) => (#{nextX},#{nextY})")
       @x = nextX
       @y = nextY
       changed
-
-    _threshold: (value, threshold) =>
-      if Math.abs(value) < threshold
-        0
-      else
-        value
 
     _clamp: (value, min, max) =>
       Math.min(max, Math.max(min, value))
@@ -60,18 +37,11 @@
 
     @context = canvas.getContext("2d");
 
-    numBalls = 5000
+    @reader = new VectorReader
+
+    numBalls = 1000
     @balls = for i in [0...numBalls]
-      new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height))
-
-#    @balls = []
-#    proportions = [0.40, 0.60]
-#    for w in proportions
-#      for h in proportions
-#        @balls.push(new Ball(w * @width, h * @height))
-
-#    @balls.push(new Ball(0.40 * @width, 0.40 * @height))
-#    @balls.push(new Ball(0.40 * @width, 0.60 * @height))
+      new Ball(Math.floor(Math.random() * width), Math.floor(Math.random() * height), @reader)
 
     @dirty = true
 
@@ -79,7 +49,7 @@
 #      console.dir(e)
       if e.shiftKey
         console.log("Adding")
-        @balls.push(new Ball(e.offsetX, e.offsetY))
+        @balls.push(new Ball(e.offsetX, e.offsetY, @reader))
         @dirty = true
       else
         console.log("Marking as dirty")
@@ -87,14 +57,19 @@
     )
 
     @canvas.addEventListener('mousemove', (e) =>
-      if e.altKey
-        imageData = @context.getImageData(0, 0, @width, @height)
-        x = e.offsetX
-        y = e.offsetY
-        pos = ((y * imageData.width) + x) * 4
-        r = imageData.data[pos]
-        g = imageData.data[pos + 1]
-        console.log("#{x},#{y}: r: #{r}, g: #{g}")
+#      if e.altKey
+      imageData = @context.getImageData(0, 0, @width, @height)
+      x = e.offsetX
+      y = e.offsetY
+      velocity = @reader.readVectorAt(x, y, imageData)
+      console.log("#{x},#{y}: v.x: #{velocity.x}, v.y: #{velocity.y}")
+#      @context.strokeStyle = "green"
+#      @context.moveTo(x, y)
+#      @context.lineTo(x + velocity.x, y)
+#      @context.stroke()
+#      @context.moveTo(x, y)
+#      @context.lineTo(x, y + velocity.y)
+#      @context.stroke()
     )
 
     draw()
@@ -109,24 +84,40 @@
       @context.fillStyle = "black"
       @context.fillRect(0, 0, @width, @height)
 
-#      @context.fillStyle = @context.createLinearGradient(0, 0, @width, @height)
       @context.globalCompositeOperation = "lighter"
 
-      gradientA = @context.createLinearGradient(0, 0, 0, @height)
-      gradientA.addColorStop(0, "rgb(0,0,0)")
-      gradientA.addColorStop(1, "rgb(255,0,0)")
-      @context.fillStyle = gradientA
-      @context.fillRect(0, 0, @width, @height)
+      maxValue = 255
+      @context.fillStyle = "rgba(0,0,0,#{maxValue})"
+      @context.fillRect(0, 0, @width / 2, @height)
+      @context.fillStyle = "rgba(0,#{maxValue},0,#{maxValue})"
+      @context.fillRect(@width / 2, 0, @width, @height)
 
-      gradientB = @context.createLinearGradient(0, 0, @width, 0)
-      gradientB.addColorStop(0, "rgb(0,0,0)")
-      gradientB.addColorStop(1, "rgb(0,255,0)")
-      @context.fillStyle = gradientB
-      @context.fillRect(0, 0, @width, @height)
+      @context.fillStyle = "rgba(0,0,0,#{maxValue})"
+      @context.fillRect(0, 0, @width, @height / 2)
+      @context.fillStyle = "rgba(#{maxValue},0,0,#{maxValue})"
+      @context.fillRect(0, @height / 2, @width, @height)
 
-      for ball in @balls
-        @context.globalCompositeOperation = "lighter"
-        ball.draw(@context)
+#      @context.globalCompositeOperation = "multiply"
+#      radial = @context.createRadialGradient(
+#        (@width / 2) - 5, (@height / 2) - 5, 10,
+#        (@width / 2) - 5, (@height / 2) - 5, @height / 2)
+#      radial.addColorStop(0, "black")
+#      radial.addColorStop(0.99, "white")
+#      radial.addColorStop(1, "rgba(0, 0, 0, 0)")
+#      @context.fillStyle = radial
+#      @context.fillRect(0, 0, @width, @height)
+
+#      gradientA = @context.createLinearGradient(0, 0, 0, @height)
+#      gradientA.addColorStop(0, "rgb(0,0,0)")
+#      gradientA.addColorStop(1, "rgb(255,0,0)")
+#      @context.fillStyle = gradientA
+#      @context.fillRect(0, 0, @width, @height)
+#
+#      gradientB = @context.createLinearGradient(0, 0, @width, 0)
+#      gradientB.addColorStop(0, "rgb(0,0,0)")
+#      gradientB.addColorStop(1, "rgb(0,255,0)")
+#      @context.fillStyle = gradientB
+#      @context.fillRect(0, 0, @width, @height)
 
       imageData = @context.getImageData(0, 0, @width, @height)
 
@@ -134,6 +125,10 @@
       for ball in @balls
         dirty = ball.readOffset(imageData)
         @dirty = @dirty || dirty
+
+      @context.globalCompositeOperation = "lighten"
+      for ball in @balls
+        ball.draw(@context)
 
       saved.restore()
 
